@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="" href="">
+    <title>CHAT-WHATS</title>
+</head>
+
+<body>
+    <header>
+        <img src="img/camera.png" id="logo">
+        <img src="img/config.png" id="logo2">
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+    </header>
+    <form>
+    <main>
+        <div id="maioral">
+            <div id="box-esquerda">
+                
+            </div>
+
+            <div id="box-direita">
+                <div id="detalhes">
+                    <img id="user2" src="img/userr.png" alt="">
+                    <input type="text" id="nome" placeholder="Seu nome de usuário">
+                </div>
+                <ul id="mensagens"></ul>
+             
+                    <div id="caixa-enviar">
+                        <input type="text" id="mensagem" placeholder="Escreva sua mensagem...">
+                        <button id="button">Enviar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <!-- Importar o script do Socket.IO -->
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        //Cria uma instancia do Socket.IO
+        const socket = io();
+
+        //Seleciona o input do nome do usuário
+        const nomeInput = document.getElementById('nome');
+        //Seleciona o input da mensagem
+        const mensagemInput = document.getElementById('mensagem');
+        //Seleciona a lista de mensagens
+        const mensagens = document.getElementById('mensagens');
+
+        //Adiciona um evento para o envio do formulário
+        document.querySelector('form').addEventListener('submit', evento => {
+            //Previne o envio padrão do formulario para não atualizar a página
+            evento.preventDefault();
+            //Obtém o valor do input do nome do usuário
+            const nome = nomeInput.value;
+            //Obtém o valor do input da mensagem
+            const mensagem = mensagemInput.value;
+
+            //Função para botão com ENTER do teclado
+            const searchBtn = document.querySelector("#btn-enviar");
+            mensagens.addEventListener("keyup", (e) => {
+
+                if(e.code === "Enter"){
+                    const enviar = e.target.value;
+                    mensagem(enviar);
+                }
+            });
+
+
+            //Método JAVASCRIpt que verifica os valores válidos(Não esta em branco os campos)
+            //EMIT envia um evento chamado 'chat message' com o oebjeto contendo os valores de nome e mensagem para o servidor
+            //TRIM é um método 
+            nome.trim() && mensagem.trim() && socket.emit('chat message', { nome, mensagem });
+
+            //Limpa o input da mensagem
+            mensagemInput.value = '';
+            //Desabilita o input do nome do usuário após a primeira mensagem
+            nomeInput.disabled = true;
+        })
+        //Adiciona um evento de mensagem recebido pelo servidor
+        socket.on('chat message', dados => {
+            //Cria um elemento de lista para exibir a mensagem
+            const lista = document.createElement('li');
+            //Define o texto da mensagem
+            lista.textContent = `${dados.nome}: ${dados.mensagem}`;
+            //Adiciona o elemento de lista de mensagens
+            mensagens.appendChild(lista);
+        })
+    </script>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400&display=swap');
+    body{
+        padding: 0;
+        margin: 0;
+        font-family: 'Montserrat', sans-serif;
+    }
+    
+    #button{
+        background-color: #4CAF50; 
+          border: none;
+          color: white;
+          padding: 10px 31px;
+          text-align: center;
+          text-decoration: none;
+          display: inline-block;
+          font-size: 18px;
+          margin: 12px 62px;
+          cursor: pointer;
+          border-radius: 28%;
+      }
+
+    header{
+        background-color:#009688;
+        display: flex;
+        justify-content: space-between;
+        flex-direction: row;
+    }
+    
+    
+    #user2{
+        width: 5%;
+        height: 3%;
+        padding-top: 10px;
+        padding-right: 10px;
+        margin-left: 2%;
+        margin-bottom: 5px;
+    }
+    
+    #nome{
+        width: 21%;
+        height: 35px;
+        border: none;
+        border-radius: 20px;
+        background-color: transparent;
+        box-shadow: 1px 2px 9px;
+        margin-top: 7px;
+        padding: 2px 18px;
+    }
+    
+    input{
+        border-radius: 10px;
+        outline: 0;
+    }
+    
+    form{
+        background-color: #eff0da;
+    
+    }
+    
+    #detalhes{
+        display: flex;
+        justify-content: left;
+        flex-direction: row;
+        align-items: center;
+        background-image: url("img/fundoo.png");
+    }
+    
+    #mensagens{
+        overflow-y: scroll;
+        color: #fff;
+        max-height: 1000px;
+    }
+    
+    #mensagem{
+        position: relative;
+        width: 90%;
+        margin: 0 20px;
+        padding: 10px 20px;
+        border-radius: 10px;
+        font-size: 1em;
+        border: none;
+        outline: none;
+        width: 56%;
+        height: 40px;
+        border: none;
+        border-radius: 6px;
+        background-color: #fff;
+        box-shadow: 1px 2px 9px;
+        margin-top: 7px;
+    }
+    
+    #caixa-enviar{
+        width: 114%;
+        background-color: #F5F5FF;
+        height: 84px;
+        position: fixed;
+        bottom: 0;
+        padding-left: 4%;
+        display: flex;
+        justify-content: left;
+        flex-direction: row;
+        align-items: center;
+    }
+    
+    #logo{
+        width: 3%;
+        height: 3%;
+        padding-top: 1%;
+        padding-left: 3%;
+    }
+    
+    #logo2{
+        width: 3%;
+        height: 3%;
+        padding-top: 1%;
+        padding-right: 90%;
+    }
+
+    ::placeholder{
+        padding: 1%;
+    }
+    
+    li{
+        color: #000;
+        background-color: #fff;
+        list-style: none;
+        margin-top: 1%;
+        border-radius: 10px;
+        padding: 9px;
+        width: 29%;
+    }
+    
+    
+    #icon-enviar{
+        padding-top: 5px;
+        width: 90%;
+        height: 60%;
+        cursor: pointer;
+    }
+    
+    #user{
+        width: 90px;
+        height: 67px;
+        padding-left: 5%;
+        margin-top: 4%;
+    }
+    
+    #box-esquerda{
+        background-image: url("img/fundottt.png");
+        background-size: 100%;
+        width: 10%;
+        height: 90vh;
+    
+    }
+    
+    #box-direita{
+        width: 90%;
+        background-image: url("img/testeclaro.png");
+        background-size:100%;
+    }
+    
+    #maioral{
+        display: flex;
+        justify-content: space-between;
+        flex-direction: row;
+    }
+    
+    
+    .itens{
+        display: flex;
+        justify-content: left;
+        flex-direction: row;
+        gap: 5%;
+    }
+    
+    .usuario {
+        padding-top: 2%;
+        font-weight: bold;
+    }
+    
+        </style>
+</body>
+
+</html>
